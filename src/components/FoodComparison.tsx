@@ -3,30 +3,26 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { NutritionCard } from "./NutritionCard";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
+import { searchFood } from "@/services/foodApi";
 
-// This would be replaced with real AI API calls
-const mockGetNutrition = (food: string) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        calories: Math.floor(Math.random() * 500),
-        protein: Math.floor(Math.random() * 30),
-        carbs: Math.floor(Math.random() * 50),
-        fat: Math.floor(Math.random() * 20),
-        fiber: Math.floor(Math.random() * 10),
-      });
-    }, 1500);
-  });
-};
+interface NutritionFacts {
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  fiber: number;
+}
 
 export const FoodComparison = () => {
   const [food1, setFood1] = useState("");
   const [food2, setFood2] = useState("");
   const [loading, setLoading] = useState(false);
-  const [nutrition1, setNutrition1] = useState(null);
-  const [nutrition2, setNutrition2] = useState(null);
+  const [nutrition1, setNutrition1] = useState<NutritionFacts | null>(null);
+  const [nutrition2, setNutrition2] = useState<NutritionFacts | null>(null);
+  const [foodName1, setFoodName1] = useState("");
+  const [foodName2, setFoodName2] = useState("");
   const { toast } = useToast();
 
   const handleCompare = async () => {
@@ -42,15 +38,22 @@ export const FoodComparison = () => {
     setLoading(true);
     try {
       const [result1, result2] = await Promise.all([
-        mockGetNutrition(food1),
-        mockGetNutrition(food2),
+        searchFood(food1),
+        searchFood(food2),
       ]);
-      setNutrition1(result1);
-      setNutrition2(result2);
+      
+      setFoodName1(result1.name);
+      setFoodName2(result2.name);
+      
+      const { name: _, ...nutrition1 } = result1;
+      const { name: __, ...nutrition2 } = result2;
+      
+      setNutrition1(nutrition1);
+      setNutrition2(nutrition2);
     } catch (error) {
       toast({
         title: "Error fetching nutrition data",
-        description: "Please try again later",
+        description: error instanceof Error ? error.message : "Please try again later",
         variant: "destructive",
       });
     } finally {
@@ -96,12 +99,12 @@ export const FoodComparison = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <NutritionCard
-            foodName={food1}
+            foodName={foodName1}
             nutrition={nutrition1}
             isLoading={loading}
           />
           <NutritionCard
-            foodName={food2}
+            foodName={foodName2}
             nutrition={nutrition2}
             isLoading={loading}
           />
