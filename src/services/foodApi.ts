@@ -82,7 +82,7 @@ export const generateAIResponse = async (prompt: string) => {
   const formattedPrompt = `As a nutrition expert, please help with this question: ${prompt}`;
   
   const response = await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDmoumroXhKpFdcPBqhrw6W3F_PZp--LMI',
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDmoumroXhKpFdcPBqhrw6W6F_PZp--LMI',
     {
       method: 'POST',
       headers: {
