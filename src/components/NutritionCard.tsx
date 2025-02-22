@@ -13,7 +13,7 @@ interface NutritionFacts {
 
 interface NutritionCardProps {
   foodName: string;
-  nutrition: NutritionFacts;
+  nutrition: NutritionFacts | null;
   isLoading?: boolean;
 }
 
@@ -28,6 +28,16 @@ export const NutritionCard = ({ foodName, nutrition, isLoading }: NutritionCardP
 
   const getPercentage = (value: number, max: number) => (value / max) * 100;
 
+  const renderNutritionItem = (label: string, value: number | undefined, maxValue: number) => (
+    <div className="space-y-2">
+      <div className="flex justify-between items-center">
+        <span className="text-sm font-medium">{label}</span>
+        <Badge variant="outline">{value ?? 0}{label === "Calories" ? " kcal" : "g"}</Badge>
+      </div>
+      <Progress value={value ? getPercentage(value, maxValue) : 0} />
+    </div>
+  );
+
   return (
     <Card className="w-full max-w-md animate-fade-in">
       <CardHeader>
@@ -35,7 +45,7 @@ export const NutritionCard = ({ foodName, nutrition, isLoading }: NutritionCardP
           {isLoading ? (
             <div className="h-6 bg-gray-200 rounded animate-pulse w-2/3" />
           ) : (
-            foodName
+            foodName || "Enter a food"
           )}
         </CardTitle>
       </CardHeader>
@@ -49,41 +59,11 @@ export const NutritionCard = ({ foodName, nutrition, isLoading }: NutritionCardP
           ))
         ) : (
           <>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Calories</span>
-                <Badge variant="outline">{nutrition.calories} kcal</Badge>
-              </div>
-              <Progress value={getPercentage(nutrition.calories, maxValues.calories)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Protein</span>
-                <Badge variant="outline">{nutrition.protein}g</Badge>
-              </div>
-              <Progress value={getPercentage(nutrition.protein, maxValues.protein)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Carbs</span>
-                <Badge variant="outline">{nutrition.carbs}g</Badge>
-              </div>
-              <Progress value={getPercentage(nutrition.carbs, maxValues.carbs)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Fat</span>
-                <Badge variant="outline">{nutrition.fat}g</Badge>
-              </div>
-              <Progress value={getPercentage(nutrition.fat, maxValues.fat)} />
-            </div>
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Fiber</span>
-                <Badge variant="outline">{nutrition.fiber}g</Badge>
-              </div>
-              <Progress value={getPercentage(nutrition.fiber, maxValues.fiber)} />
-            </div>
+            {renderNutritionItem("Calories", nutrition?.calories, maxValues.calories)}
+            {renderNutritionItem("Protein", nutrition?.protein, maxValues.protein)}
+            {renderNutritionItem("Carbs", nutrition?.carbs, maxValues.carbs)}
+            {renderNutritionItem("Fat", nutrition?.fat, maxValues.fat)}
+            {renderNutritionItem("Fiber", nutrition?.fiber, maxValues.fiber)}
           </>
         )}
       </CardContent>
