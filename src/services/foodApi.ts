@@ -78,6 +78,9 @@ export const searchFood = async (query: string) => {
 };
 
 export const generateAIResponse = async (prompt: string) => {
+  // Format the prompt to focus on nutrition
+  const formattedPrompt = `As a nutrition expert, please help with this question: ${prompt}`;
+  
   const response = await fetch(
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDmoumroXhKpFdcPBqhrw6W3F_PZp--LMI',
     {
@@ -87,16 +90,26 @@ export const generateAIResponse = async (prompt: string) => {
       },
       body: JSON.stringify({
         contents: [{
-          parts: [{ text: prompt }]
-        }]
+          parts: [{ text: formattedPrompt }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 800
+        }
       })
     }
   );
 
   if (!response.ok) {
-    throw new Error('Failed to generate AI response');
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error?.message || 'Failed to generate AI response');
   }
 
   const data = await response.json();
+  
+  if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+    throw new Error('Invalid response format from AI');
+  }
+
   return data.candidates[0].content.parts[0].text;
 };
