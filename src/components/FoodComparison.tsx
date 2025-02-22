@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { NutritionCard } from "./NutritionCard";
+import { NutritionAIChat } from "./NutritionAIChat";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { searchFood } from "@/services/foodApi";
@@ -109,6 +110,8 @@ export const FoodComparison = () => {
             isLoading={loading}
           />
         </div>
+
+        <NutritionAIChat />
       </div>
     </div>
   );

@@ -18,9 +18,11 @@ const NUTRIENT_IDS = {
   fiber: 1079,   // Fiber
 };
 
+const USDA_API_KEY = '5clelL7NN1oTh4FgfzaIDjcaa8yj7NL8oJHV4GSu';
+
 export const searchFood = async (query: string) => {
   const response = await fetch(
-    `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${import.meta.env.VITE_USDA_API_KEY}&query=${encodeURIComponent(
+    `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${USDA_API_KEY}&query=${encodeURIComponent(
       query
     )}&pageSize=1&dataType=Survey%20%28FNDDS%29`,
     {
@@ -73,4 +75,28 @@ export const searchFood = async (query: string) => {
     name: food.description,
     ...nutrients,
   };
+};
+
+export const generateAIResponse = async (prompt: string) => {
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDmoumroXhKpFdcPBqhrw6W3F_PZp--LMI',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        contents: [{
+          parts: [{ text: prompt }]
+        }]
+      })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to generate AI response');
+  }
+
+  const data = await response.json();
+  return data.candidates[0].content.parts[0].text;
 };
