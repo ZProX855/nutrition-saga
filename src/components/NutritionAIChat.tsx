@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { generateAIResponse } from "@/services/foodApi";
 import { useToast } from "@/hooks/use-toast";
-import { Send } from "lucide-react";
+import { MessageSquare, Send, Heart, Apple } from "lucide-react";
 
 interface Message {
   text: string;
@@ -49,38 +49,52 @@ export const NutritionAIChat = () => {
   };
 
   return (
-    <Card className="w-full bg-white/50 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-xl font-medium flex items-center gap-2">
-          <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
-          Chat with Your Nutrition Doctor
+    <Card className="w-full bg-white/70 backdrop-blur-md shadow-lg transform transition-all duration-300 hover:shadow-xl">
+      <CardHeader className="border-b border-gray-100">
+        <CardTitle className="text-xl font-medium flex items-center gap-3">
+          <div className="relative">
+            <MessageSquare className="w-6 h-6 text-primary animate-pulse" />
+            <div className="absolute -inset-1 bg-primary/20 rounded-full blur-sm"></div>
+          </div>
+          <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Chat with Your Nutrition Doctor
+          </span>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-6">
         <div className="space-y-4">
-          <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-white/80 rounded-lg">
+          <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-white/80 rounded-lg backdrop-blur-sm">
+            {messages.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full space-y-4 text-gray-500">
+                <Apple className="w-12 h-12 text-primary animate-bounce" />
+                <p>Ask me anything about nutrition or request a personalized diet plan!</p>
+              </div>
+            )}
             {messages.map((message, index) => (
               <div
                 key={index}
                 className={`flex ${
                   message.isUser ? "justify-end" : "justify-start"
-                }`}
+                } animate-fade-in`}
               >
                 <div
-                  className={`max-w-[80%] p-3 rounded-lg ${
+                  className={`max-w-[80%] p-4 rounded-2xl ${
                     message.isUser
-                      ? "bg-primary text-white"
-                      : "bg-gray-100 text-gray-800"
-                  } animate-fade-in`}
+                      ? "bg-primary text-white ml-auto transform hover:scale-[1.02] transition-transform"
+                      : "bg-gray-100 text-gray-800 mr-auto transform hover:scale-[1.02] transition-transform"
+                  } shadow-md`}
                 >
-                  <p className="whitespace-pre-wrap">{message.text}</p>
+                  <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
                 </div>
               </div>
             ))}
             {loading && (
               <div className="flex justify-start animate-pulse">
-                <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
-                  Thinking...
+                <div className="bg-gray-100 text-gray-800 p-4 rounded-2xl shadow-md">
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-4 h-4" />
+                    Thinking...
+                  </div>
                 </div>
               </div>
             )}
@@ -90,10 +104,14 @@ export const NutritionAIChat = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Ask about nutrition or request a diet plan..."
-              className="flex-1 bg-white"
+              className="flex-1 bg-white/90 backdrop-blur-sm transition-all duration-300 focus:ring-2 focus:ring-primary/20"
             />
-            <Button type="submit" disabled={loading}>
-              <Send className="h-4 w-4" />
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-primary hover:bg-primary/90 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Send className="w-4 h-4" />
             </Button>
           </form>
         </div>
