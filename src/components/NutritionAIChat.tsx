@@ -5,10 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { generateAIResponse } from "@/services/foodApi";
 import { useToast } from "@/hooks/use-toast";
+import { Send } from "lucide-react";
+
+interface Message {
+  text: string;
+  isUser: boolean;
+}
 
 export const NutritionAIChat = () => {
   const [query, setQuery] = useState("");
-  const [response, setResponse] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
@@ -23,10 +29,14 @@ export const NutritionAIChat = () => {
       return;
     }
 
+    const userMessage = query.trim();
+    setMessages((prev) => [...prev, { text: userMessage, isUser: true }]);
+    setQuery("");
     setLoading(true);
+
     try {
-      const aiResponse = await generateAIResponse(query);
-      setResponse(aiResponse);
+      const aiResponse = await generateAIResponse(userMessage);
+      setMessages((prev) => [...prev, { text: aiResponse, isUser: false }]);
     } catch (error) {
       toast({
         title: "Error generating response",
@@ -41,11 +51,41 @@ export const NutritionAIChat = () => {
   return (
     <Card className="w-full bg-white/50 backdrop-blur-sm">
       <CardHeader>
-        <CardTitle className="text-xl font-medium">Ask Nutrition AI</CardTitle>
+        <CardTitle className="text-xl font-medium flex items-center gap-2">
+          <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+          Chat with Your Nutrition Doctor
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex gap-2">
+        <div className="space-y-4">
+          <div className="h-[400px] overflow-y-auto p-4 space-y-4 bg-white/80 rounded-lg">
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  message.isUser ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    message.isUser
+                      ? "bg-primary text-white"
+                      : "bg-gray-100 text-gray-800"
+                  } animate-fade-in`}
+                >
+                  <p className="whitespace-pre-wrap">{message.text}</p>
+                </div>
+              </div>
+            ))}
+            {loading && (
+              <div className="flex justify-start animate-pulse">
+                <div className="bg-gray-100 text-gray-800 p-3 rounded-lg">
+                  Thinking...
+                </div>
+              </div>
+            )}
+          </div>
+          <form onSubmit={handleSubmit} className="flex gap-2">
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -53,15 +93,10 @@ export const NutritionAIChat = () => {
               className="flex-1 bg-white"
             />
             <Button type="submit" disabled={loading}>
-              {loading ? "Thinking..." : "Ask"}
+              <Send className="h-4 w-4" />
             </Button>
-          </div>
-          {response && (
-            <div className="mt-4 p-4 bg-white rounded-lg">
-              <p className="whitespace-pre-wrap">{response}</p>
-            </div>
-          )}
-        </form>
+          </form>
+        </div>
       </CardContent>
     </Card>
   );

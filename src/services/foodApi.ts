@@ -7,24 +7,77 @@ interface NutritionResponse {
       nutrientId: number;
       value: number;
     }>;
+    foodCategory: string;
   }>;
 }
 
+export interface FoodCategory {
+  name: string;
+  foods: Array<{ id: number; name: string }>;
+}
+
 const NUTRIENT_IDS = {
-  calories: 1008, // Energy (kcal)
-  protein: 1003, // Protein
-  carbs: 1005,   // Carbohydrates
-  fat: 1004,     // Total fat
-  fiber: 1079,   // Fiber
+  calories: 1008,
+  protein: 1003,
+  carbs: 1005,
+  fat: 1004,
+  fiber: 1079,
+};
+
+const FOOD_CATEGORIES = {
+  Protein: ['chicken breast', 'salmon', 'beef', 'eggs', 'tofu'],
+  Carbs: ['rice', 'bread', 'pasta', 'potato', 'oats'],
+  Fat: ['avocado', 'olive oil', 'almonds', 'peanut butter'],
+  Fruit: ['apple', 'banana', 'orange', 'strawberry'],
+  Dairy: ['milk', 'yogurt', 'cheese', 'cottage cheese'],
 };
 
 const USDA_API_KEY = '5clelL7NN1oTh4FgfzaIDjcaa8yj7NL8oJHV4GSu';
 
-export const searchFood = async (query: string) => {
+export const fetchFoodCategories = async (): Promise<FoodCategory[]> => {
+  const categories: FoodCategory[] = [];
+  
+  for (const [category, foods] of Object.entries(FOOD_CATEGORIES)) {
+    const foodList = await Promise.all(
+      foods.map(async (food) => {
+        try {
+          const response = await fetch(
+            `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${USDA_API_KEY}&query=${encodeURIComponent(
+              food
+            )}&pageSize=1&dataType=Survey%20%28FNDDS%29`
+          );
+          
+          if (!response.ok) return null;
+          
+          const data: NutritionResponse = await response.json();
+          if (data.foods && data.foods.length > 0) {
+            return {
+              id: data.foods[0].fdcId,
+              name: data.foods[0].description,
+            };
+          }
+          return null;
+        } catch (error) {
+          console.error(`Error fetching food: ${food}`, error);
+          return null;
+        }
+      })
+    );
+
+    categories.push({
+      name: category,
+      foods: foodList.filter((food): food is { id: number; name: string } => food !== null),
+    });
+  }
+
+  return categories;
+};
+
+export const searchFood = async (query: string, amount: number = 100) => {
   const response = await fetch(
     `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${USDA_API_KEY}&query=${encodeURIComponent(
       query
-    )}&pageSize=1&dataType=Survey%20%28FNDDS%29`,
+    )}&pageSize=5&dataType=Survey%20%28FNDDS%29`,
     {
       headers: {
         'Content-Type': 'application/json',
@@ -44,7 +97,7 @@ export const searchFood = async (query: string) => {
 
   const food = data.foods[0];
   const nutrients = food.foodNutrients.reduce((acc, nutrient) => {
-    const value = nutrient.value || 0;
+    const value = (nutrient.value || 0) * (amount / 100);
     switch (nutrient.nutrientId) {
       case NUTRIENT_IDS.calories:
         acc.calories = Math.round(value);
@@ -78,8 +131,7 @@ export const searchFood = async (query: string) => {
 };
 
 export const generateAIResponse = async (prompt: string) => {
-  // Format the prompt to focus on nutrition
-  const formattedPrompt = `As a nutrition expert, please help with this question: ${prompt}`;
+  const formattedPrompt = `As a friendly nutrition doctor, I'll help you with your question. Please respond with organized bullet points, using emojis, and maintain an engaging conversation: ${prompt}`;
   
   const response = await fetch(
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=AIzaSyDmoumroXhKpFdcPBqhrw6W6F_PZp--LMI',
@@ -113,3 +165,4 @@ export const generateAIResponse = async (prompt: string) => {
 
   return data.candidates[0].content.parts[0].text;
 };
+
