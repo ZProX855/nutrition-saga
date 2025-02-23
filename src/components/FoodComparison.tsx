@@ -98,15 +98,15 @@ export const FoodComparison = () => {
       <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
         <div className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-4">
-            <img src="/logo.svg" alt="Wellness Tracker" className="w-12 h-12" />
-            <h1 className="text-4xl font-bold text-primary">Wellness Tracker</h1>
+            <img src="/logo.svg" alt="Wellness Tracker" className="w-12 h-12 animate-pulse" />
+            <h1 className="text-4xl font-bold text-primary animate-fade-in">Wellness Tracker</h1>
           </div>
-          <p className="text-lg text-gray-600">
+          <p className="text-lg text-gray-600 animate-fade-in">
             Compare the nutritional value of any two foods
           </p>
         </div>
 
-        <Card className="bg-white/50 backdrop-blur-sm">
+        <Card className="bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
           <CardContent className="p-6 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
@@ -114,7 +114,7 @@ export const FoodComparison = () => {
                   <Button
                     variant="outline"
                     onClick={() => setIsManualInput1(!isManualInput1)}
-                    className="w-40"
+                    className="w-40 hover:bg-primary/10 transition-colors"
                   >
                     {isManualInput1 ? "Select from List" : "Manual Input"}
                   </Button>
@@ -124,19 +124,23 @@ export const FoodComparison = () => {
                     placeholder="Enter first food (e.g., Apple)"
                     value={food1}
                     onChange={(e) => setFood1(e.target.value)}
-                    className="bg-white"
+                    className="bg-white hover:ring-2 hover:ring-primary/20 transition-all"
                   />
                 ) : (
                   <Select onValueChange={setFood1}>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-white hover:bg-primary/5 transition-colors">
                       <SelectValue placeholder="Select first food" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {categories.map((category) => (
                         <SelectGroup key={category.name}>
-                          <SelectLabel>{category.name}</SelectLabel>
+                          <SelectLabel className="text-primary font-semibold">{category.name}</SelectLabel>
                           {category.foods.map((food) => (
-                            <SelectItem key={food.id} value={food.name}>
+                            <SelectItem
+                              key={food.id}
+                              value={food.name}
+                              className="hover:bg-primary/5 transition-colors cursor-pointer"
+                            >
                               {food.name}
                             </SelectItem>
                           ))}
@@ -150,7 +154,7 @@ export const FoodComparison = () => {
                     type="number"
                     value={amount1}
                     onChange={(e) => setAmount1(e.target.value)}
-                    className="w-24 bg-white"
+                    className="w-24 bg-white hover:ring-2 hover:ring-primary/20 transition-all"
                     min="1"
                   />
                   <span>grams</span>
@@ -162,7 +166,7 @@ export const FoodComparison = () => {
                   <Button
                     variant="outline"
                     onClick={() => setIsManualInput2(!isManualInput2)}
-                    className="w-40"
+                    className="w-40 hover:bg-primary/10 transition-colors"
                   >
                     {isManualInput2 ? "Select from List" : "Manual Input"}
                   </Button>
@@ -172,19 +176,23 @@ export const FoodComparison = () => {
                     placeholder="Enter second food (e.g., Banana)"
                     value={food2}
                     onChange={(e) => setFood2(e.target.value)}
-                    className="bg-white"
+                    className="bg-white hover:ring-2 hover:ring-primary/20 transition-all"
                   />
                 ) : (
                   <Select onValueChange={setFood2}>
-                    <SelectTrigger className="bg-white">
+                    <SelectTrigger className="bg-white hover:bg-primary/5 transition-colors">
                       <SelectValue placeholder="Select second food" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-white">
                       {categories.map((category) => (
                         <SelectGroup key={category.name}>
-                          <SelectLabel>{category.name}</SelectLabel>
+                          <SelectLabel className="text-primary font-semibold">{category.name}</SelectLabel>
                           {category.foods.map((food) => (
-                            <SelectItem key={food.id} value={food.name}>
+                            <SelectItem
+                              key={food.id}
+                              value={food.name}
+                              className="hover:bg-primary/5 transition-colors cursor-pointer"
+                            >
                               {food.name}
                             </SelectItem>
                           ))}
@@ -198,7 +206,7 @@ export const FoodComparison = () => {
                     type="number"
                     value={amount2}
                     onChange={(e) => setAmount2(e.target.value)}
-                    className="w-24 bg-white"
+                    className="w-24 bg-white hover:ring-2 hover:ring-primary/20 transition-all"
                     min="1"
                   />
                   <span>grams</span>
@@ -207,7 +215,7 @@ export const FoodComparison = () => {
             </div>
             <Button
               onClick={handleCompare}
-              className="w-full mt-4 bg-primary hover:bg-primary/90 transition-colors"
+              className="w-full mt-4 bg-primary hover:bg-primary/90 transition-colors transform hover:scale-[1.02] active:scale-[0.98] duration-200"
               disabled={loading}
             >
               {loading ? "Comparing..." : "Compare Foods"}

@@ -1,4 +1,3 @@
-
 interface NutritionResponse {
   foods: Array<{
     fdcId: number;
@@ -25,11 +24,78 @@ const NUTRIENT_IDS = {
 };
 
 const FOOD_CATEGORIES = {
-  Protein: ['chicken breast', 'salmon', 'beef', 'eggs', 'tofu'],
-  Carbs: ['rice', 'bread', 'pasta', 'potato', 'oats'],
-  Fat: ['avocado', 'olive oil', 'almonds', 'peanut butter'],
-  Fruit: ['apple', 'banana', 'orange', 'strawberry'],
-  Dairy: ['milk', 'yogurt', 'cheese', 'cottage cheese'],
+  Protein: [
+    'Chicken Breast',
+    'Salmon',
+    'Beef Steak',
+    'Eggs',
+    'Tofu',
+    'Turkey Breast',
+    'Shrimp',
+    'Tuna',
+    'Pork Chop',
+    'Greek Yogurt'
+  ],
+  Carbs: [
+    'White Rice',
+    'Brown Rice',
+    'Bread',
+    'Pasta',
+    'Potato',
+    'Sweet Potato',
+    'Quinoa',
+    'Oats',
+    'Corn',
+    'Black Beans'
+  ],
+  Fat: [
+    'Avocado',
+    'Olive Oil',
+    'Almonds',
+    'Peanut Butter',
+    'Walnuts',
+    'Coconut Oil',
+    'Chia Seeds',
+    'Flax Seeds',
+    'Cashews',
+    'Macadamia Nuts'
+  ],
+  Fruit: [
+    'Apple',
+    'Banana',
+    'Orange',
+    'Strawberry',
+    'Blueberry',
+    'Mango',
+    'Pineapple',
+    'Grapes',
+    'Watermelon',
+    'Peach'
+  ],
+  Dairy: [
+    'Milk',
+    'Yogurt',
+    'Cheese',
+    'Cottage Cheese',
+    'Mozzarella',
+    'Butter',
+    'Cream Cheese',
+    'Sour Cream',
+    'Ice Cream',
+    'Whey Protein'
+  ],
+  Vegetables: [
+    'Broccoli',
+    'Spinach',
+    'Carrot',
+    'Bell Pepper',
+    'Tomato',
+    'Cucumber',
+    'Lettuce',
+    'Zucchini',
+    'Asparagus',
+    'Green Beans'
+  ]
 };
 
 const USDA_API_KEY = '5clelL7NN1oTh4FgfzaIDjcaa8yj7NL8oJHV4GSu';
@@ -165,4 +231,3 @@ export const generateAIResponse = async (prompt: string) => {
 
   return data.candidates[0].content.parts[0].text;
 };
-
